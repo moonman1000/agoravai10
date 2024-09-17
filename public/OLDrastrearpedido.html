@@ -19,17 +19,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
     <script>
         var socket = io();
-        var map, marcadorMotorista, caminhoPercorrido;
+        var map, marcadorMotorista;
         var statusElement = document.getElementById('status');
-        var posicoesMotorista = []; // Armazena o trajeto percorrido
 
         function inicializarMapa(lat, lng) {
             map = L.map('map').setView([lat, lng], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
             marcadorMotorista = L.marker([lat, lng]).addTo(map);
-
-            // Inicializar a linha azul do trajeto
-            caminhoPercorrido = L.polyline(posicoesMotorista, { color: 'blue' }).addTo(map);
         }
 
         socket.on('atualizacaoLocalizacao', function(data) {
@@ -38,12 +34,6 @@
             } else {
                 marcadorMotorista.setLatLng([data.lat, data.lng]);
                 map.panTo([data.lat, data.lng]);
-
-                // Adiciona nova posição ao array
-                posicoesMotorista.push([data.lat, data.lng]);
-
-                // Atualiza a linha do trajeto
-                caminhoPercorrido.setLatLngs(posicoesMotorista);
             }
             statusElement.textContent = `Localização do motorista: ${data.lat.toFixed(6)}, ${data.lng.toFixed(6)}`;
         });
@@ -58,3 +48,5 @@
     </script>
 </body>
 </html>
+
+
