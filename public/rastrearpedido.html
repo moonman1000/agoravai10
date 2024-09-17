@@ -19,29 +19,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
     <script>
         var socket = io();
-        var map, marcadorMotorista;
+        var map, marcadorMotorista, polyline;
+        var route = []; // Store the route (array of LatLng)
         var statusElement = document.getElementById('status');
-        var polyline; // Variable to hold the route
 
+        // Function to initialize the map
         function inicializarMapa(lat, lng) {
             map = L.map('map').setView([lat, lng], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
             marcadorMotorista = L.marker([lat, lng]).addTo(map);
 
-            // Initialize polyline with a dashed blue line style
-            polyline = L.polyline([], { color: 'blue', dashArray: '5, 5' }).addTo(map);
+            // Initialize the polyline (dashed style)
+            polyline = L.polyline(route, {
+                color: 'blue',
+                dashArray: '10, 10', // Dashed line
+                weight: 3,
+                opacity: 0.7
+            }).addTo(map);
         }
 
+        // Update the driver's location and extend the polyline
         socket.on('atualizacaoLocalizacao', function(data) {
+            // Add the new coordinates to the route array
+            route.push([data.lat, data.lng]);
+
             if (!map) {
                 inicializarMapa(data.lat, data.lng);
             } else {
                 marcadorMotorista.setLatLng([data.lat, data.lng]);
                 map.panTo([data.lat, data.lng]);
-            }
 
-            // Update the polyline with the driver's route
-            polyline.setLatLngs(data.route);
+                // Update the polyline with the new route
+                polyline.setLatLngs(route);
+            }
 
             statusElement.textContent = `Localização do motorista: ${data.lat.toFixed(6)}, ${data.lng.toFixed(6)}`;
         });
@@ -56,3 +66,4 @@
     </script>
 </body>
 </html>
+
