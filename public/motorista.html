@@ -26,7 +26,7 @@
         var statusElement = document.getElementById('status');
 
         function inicializarMapa(lat, lng) {
-            map = L.map('map').setView([lat, lng], 13);
+            map = L.map('map').setView([lat, lng], 16); // Zoom ajustado para mais precisão
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
             marcadorMotorista = L.marker([lat, lng]).addTo(map);
         }
@@ -39,7 +39,7 @@
                 inicializarMapa(lat, lng);
             } else {
                 marcadorMotorista.setLatLng([lat, lng]);
-                map.panTo([lat, lng]);
+                map.flyTo([lat, lng], map.getZoom()); // Animação na movimentação
             }
 
             socket.emit('atualizarLocalizacao', { lat: lat, lng: lng });
@@ -47,7 +47,14 @@
         }
 
         function erroLocalizacao(erro) {
-            statusElement.textContent = `Erro ao obter localização: ${erro.message}`;
+            statusElement.textContent = `Erro ao obter localização: ${erro.message}. Usando localização padrão.`;
+            var lat = -23.550520; // Latitude de São Paulo (padrão)
+            var lng = -46.633308; // Longitude de São Paulo (padrão)
+            if (!map) {
+                inicializarMapa(lat, lng);
+            } else {
+                marcadorMotorista.setLatLng([lat, lng]);
+            }
         }
 
         if ("geolocation" in navigator) {
