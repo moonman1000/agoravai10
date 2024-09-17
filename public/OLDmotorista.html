@@ -24,7 +24,6 @@
         var socket = io();
         var map, marcadorMotorista;
         var statusElement = document.getElementById('status');
-        var route = []; // Array to store the route coordinates
 
         function inicializarMapa(lat, lng) {
             map = L.map('map').setView([lat, lng], 16); // Zoom ajustado para mais precisão
@@ -43,11 +42,7 @@
                 map.flyTo([lat, lng], map.getZoom()); // Animação na movimentação
             }
 
-            // Add the current location to the route array
-            route.push([lat, lng]);
-
-            // Emit the updated location and route to the server
-            socket.emit('atualizarLocalizacao', { lat: lat, lng: lng, route: route });
+            socket.emit('atualizarLocalizacao', { lat: lat, lng: lng });
             statusElement.textContent = `Localização atualizada: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
         }
 
