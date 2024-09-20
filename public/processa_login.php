@@ -25,12 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         // Sucesso no login
         $_SESSION['email'] = $email;
-        header("Location: index.html");  // Redireciona para a página principal
+        header("Location: index2.html");  // Redireciona para a página principal
         exit();
     } else {
         // Login falhou, mensagem de erro
         $login_error = "Email ou senha incorretos";
-        header("Location: login.html?error=" . urlencode($login_error)); // Volta para o login com erro
+        header("Location: login.php?error=" . urlencode($login_error)); // Volta para o login com erro
         exit();
     }
 }
